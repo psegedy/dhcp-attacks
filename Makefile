@@ -14,7 +14,8 @@ pds-dhcprogue: $(SOURCES_ROGUE)
 	$(CXX) $(CXXFLAGS) $(SOURCES_ROGUE) $(SOURCES_COMMON) -o $@
 
 clean:
-	rm -f $(EXECUTABLES)
+	rm -f $(EXECUTABLES) xseged00.zip
 
 pack:
-	zip 
+	zip xseged00.zip $(SOURCES_STARVE) $(SOURCES_ROGUE) $(SOURCES_COMMON) \
+					 dokumentace.pdf readme
