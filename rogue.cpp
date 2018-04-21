@@ -127,6 +127,12 @@ int get_args(int argc, char **argv, params *p) {
     uint32_t last_addr;
     struct ifreq if_ifc;
 
+    if (argc != 13) {
+        cerr << "Wrong number of arguments" << endl;
+        usage();
+        return 1;
+    }
+
     while ((c = getopt (argc, argv, "i:p:g:n:d:l:")) != -1)
         switch (c) {
             case 'i':
@@ -374,5 +380,5 @@ void usage() {
          << "\t-g <ip_addresses>            gateway IP address" << endl
          << "\t-n <ip_addresses>            IP address of DNS server" << endl
          << "\t-d <domain_name>             Domani name" << endl
-         << "\t-l <static_file>             Lease time in seconds" << endl;
+         << "\t-l <lease_time>              Lease time in seconds" << endl;
 }

