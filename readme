@@ -1,0 +1,20 @@
+=== DHCP Starvation ===
+- vykonáva DISCOVER flood, pričom pri každom novom DISCOVERY zmení MAC adresu
+
+Usage
+./pds-dhcpstarve -i <interface>
+
+
+=== Rogue DHCP Server ===
+- oproti zadaným parametrom naviac nastavuje klientovi aj masku siete, ako amska sa použije maska z rozhrania na ktorom je server spsutený
+
+Usage:
+./pds-dhcprogue -i interface -p pool -g gateway -n dns-server -d domain -l lease-time
+
+Parameters
+    -i <interface>               Interface name
+    -p <ip_address>-<ip_address> IP address range
+    -g <ip_addresses>            gateway IP address
+    -n <ip_addresses>            IP address of DNS server
+    -d <domain_name>             Domani name
+    -l <lease_time>              Lease time in seconds
