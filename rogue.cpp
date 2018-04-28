@@ -39,21 +39,6 @@ int main(int argc, char **argv) {
     if (get_args(argc, argv, &p) == 1)
         return EXIT_FAILURE;
 
-    cout << "iface: " << p.if_name << endl;
-    cout << "if_idx: " << p.if_idx << endl;
-
-    cout << "MAC: ";
-    for (int i = 0; i < 6; ++i) {
-        cout << hex << (int)p.mac[i] << dec << ":";
-    }
-    cout << endl;
-    cout << "IP: " << inet_ntoa(*(struct in_addr *)&p.ip_addr) << endl;
-    cout << "Mask: " << inet_ntoa(*(struct in_addr *)&p.mask) << endl;
-    cout << "Gateway: " << inet_ntoa(*(struct in_addr *)&p.gate) << endl;
-    cout << "DNS: " << inet_ntoa(*(struct in_addr *)&p.ns) << endl;
-    cout << "Domain: " << p.domain << endl;
-    cout << "Lease: " << ntohl(p.lease_s) << endl;
-
     // set sockaddr structure
     sa.sll_family = AF_PACKET;
     sa.sll_ifindex = p.if_idx;
@@ -291,12 +276,14 @@ uint32_t fill_dhcp(int message_type, dhcp_packet *dhcp, params *p, struct sockad
     return addr;
 }
 
+// delete lease by MAC address
+// inspired by my ISA class project https://github.com/psegedy/dserver
 void del_by_mac(LeaseVector &lease, params *p, uint32_t yiaddr, array<u_char, 16> &client_mac) {
     uint32_t addr;
     LeaseVector to_del;
     to_del.clear();
 
-    for(auto i = lease.begin(); i != lease.end(); ++i) {
+    for(auto i = lease.begin(); i != lease.end(); i++) {
         if (get<0>(*i) == client_mac) {
             addr = get<1>(*i);
             if (yiaddr != addr)
@@ -304,22 +291,24 @@ void del_by_mac(LeaseVector &lease, params *p, uint32_t yiaddr, array<u_char, 16
             to_del.push_back(*i);
         }
     }
-    for (auto i = to_del.begin(); i != to_del.end(); ++i)
+    for (auto i = to_del.begin(); i != to_del.end(); i++)
         // delete all marked leases
         lease.erase(remove(lease.begin(), lease.end(), *i), lease.end());
 }
 
+// delete expired leases
+// inspired by my ISA class project https://github.com/psegedy/dserver
 void del_expired(LeaseVector &lease, params *p) {
     time_t now = time(nullptr);
     LeaseVector to_del;
     to_del.clear();
-    for(auto i = lease.begin(); i != lease.end(); ++i) {
+    for(auto i = lease.begin(); i != lease.end(); i++) {
         if (now > get<3>(*i)) {
             to_del.push_back(*i);
             p->pool.push_back(get<1>(*i));
         }
     }
-    for (auto i = to_del.begin(); i != to_del.end(); ++i) {
+    for (auto i = to_del.begin(); i != to_del.end(); i++) {
         // delete expired leases
         lease.erase(remove(lease.begin(), lease.end(), *i), lease.end());
     }

@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
 
     memset(frame, 0, PKT_LEN);
     // create RAW UDP socket
-    cout << "creating socket" << endl;
     if ((socket_handle = socket(PF_PACKET, SOCK_RAW, IPPROTO_UDP)) < 0) {
         cerr << "ERROR: Failed to create socket" << endl;
         return EXIT_FAILURE;
