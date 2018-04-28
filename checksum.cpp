@@ -1,3 +1,11 @@
+/*
+ * File: starve.cpp
+ * Date: 28.4.2018
+ * Name: DHCP Starvation, PDS project
+ * Author: Patrik Segedy <xseged00@vutbr.cz>
+ * Description: DHCP Starvation
+ */
+
 #include "checksum.h"
 /* 
  * Implementation of IP header checksum
