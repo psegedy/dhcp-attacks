@@ -18,4 +18,4 @@ clean:
 
 pack:
 	zip xseged00.zip $(SOURCES_STARVE) $(SOURCES_ROGUE) $(SOURCES_COMMON) \
-					 dokumentace.pdf readme
+					 dokumentace.pdf readme Makefile
